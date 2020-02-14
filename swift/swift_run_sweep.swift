@@ -18,7 +18,7 @@ app (void o) make_dir(string dirname) {
 // anything that need to be done prior to a model runs
 // (e.g. file creation) can be done here
 app (void o) run_prerequisites() {
-  "cp" "-r" emews_root+"/data/PhysiBoSSa/config" turbine_output;
+  "cp" "-r" (emews_root+"/data/PhysiBoSSa/config") turbine_output;
 }
 
 run_prerequisites() => {
