@@ -44,7 +44,7 @@ MODEL_CMD=""
 # TODO: Define the arguments to the MODEL_CMD. Each rguments should be
 # surrounded by quotes and separated by spaces. For example,
 # arg_array=("$emews_root/python/nt3_tc1_runner.py" "$parameter_string")
-arg_array=("$emews_root/PhysiBoSSa/spheroid_TNF" "$param_line")
+arg_array=("$emews_root/data/PhysiBoSSa/spheroid_TNF" "$param_line")
 COMMAND="$MODEL_CMD ${arg_array[@]}"
 
 # Turn bash error checking off. This is

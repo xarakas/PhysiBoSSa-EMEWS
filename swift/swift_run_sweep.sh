@@ -11,7 +11,7 @@ fi
 
 # uncomment to turn on swift/t logging. Can also set TURBINE_LOG,
 # TURBINE_DEBUG, and ADLB_DEBUG to 0 to turn off logging
-export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
+# export TURBINE_LOG=1 TURBINE_DEBUG=1 ADLB_DEBUG=1
 export EMEWS_PROJECT_ROOT=$( cd $( dirname $0 )/.. ; /bin/pwd )
 # source some utility functions used by EMEWS in this script
 source "${EMEWS_PROJECT_ROOT}/etc/emews_utils.sh"
@@ -21,15 +21,18 @@ export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
 check_directory_exists
 
 # TODO edit the number of processes as required.
-export PROCS=1
+export PROCS=2
 
 # TODO edit QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME
 # as required. Note that QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME will
 # be ignored if the MACHINE variable (see below) is not set.
-export QUEUE=batch
+# export QUEUE=main
 export WALLTIME=00:10:00
-export PPN=16
+export PPN=1
 export TURBINE_JOBNAME="${EXPID}_job"
+
+# Extra argument passed to SLURM script
+export TURBINE_SBATCH_ARGS=--qos=debug
 
 # if R cannot be found, then these will need to be
 # uncommented and set correctly.
@@ -46,7 +49,7 @@ CMD_LINE_ARGS="$*"
 
 # set machine to your schedule type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
-MACHINE=""
+MACHINE="slurm"
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"

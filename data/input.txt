@@ -1,10 +1,1 @@
-/home/bscuser/Documentos/TFM/EMEWS-PhysiBoSSa/PhysiBoSSa/config/PhysiCell_settings.xml
-/home/bscuser/Documentos/TFM/EMEWS-PhysiBoSSa/PhysiBoSSa/config/PhysiCell_settings.xml
-/home/bscuser/Documentos/TFM/EMEWS-PhysiBoSSa/PhysiBoSSa/config/PhysiCell_settings.xml
-/home/bscuser/Documentos/TFM/EMEWS-PhysiBoSSa/PhysiBoSSa/config/PhysiCell_settings.xml
-/home/bscuser/Documentos/TFM/EMEWS-PhysiBoSSa/PhysiBoSSa/config/PhysiCell_settings.xml
-/home/bscuser/Documentos/TFM/EMEWS-PhysiBoSSa/PhysiBoSSa/config/PhysiCell_settings.xml
-/home/bscuser/Documentos/TFM/EMEWS-PhysiBoSSa/PhysiBoSSa/config/PhysiCell_settings.xml
-/home/bscuser/Documentos/TFM/EMEWS-PhysiBoSSa/PhysiBoSSa/config/PhysiCell_settings.xml
-/home/bscuser/Documentos/TFM/EMEWS-PhysiBoSSa/PhysiBoSSa/config/PhysiCell_settings.xml
-/home/bscuser/Documentos/TFM/EMEWS-PhysiBoSSa/PhysiBoSSa/config/PhysiCell_settings.xml
+./config/PhysiCell_settings.xml
