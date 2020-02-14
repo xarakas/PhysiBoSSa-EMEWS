@@ -10,27 +10,30 @@ app (file out, file err) run_model (file shfile, string param_line, string insta
     "bash" shfile param_line emews_root instance @stdout=out @stderr=err;
 }
 
-// call this to create any required directories
 app (void o) make_dir(string dirname) {
   "mkdir" "-p" dirname;
 }
 
-// anything that need to be done prior to a model runs
-// (e.g. file creation) can be done here
-app (void o) run_prerequisites() {
-  "cp" "-r" (emews_root+"/data/PhysiBoSSa/config") turbine_output;
+app (void o) cp_config_files(string instance) {
+  "cp" "-r" (emews_root+"/data/PhysiBoSSa/config") instance;
 }
 
-run_prerequisites() => {
-  file model_sh = input(emews_root+"/scripts/growth_model.sh");
-  file upf = input(argv("f"));
-  string upf_lines[] = file_lines(upf);
-  foreach s,i in upf_lines {
-    string instance = "%s/instance_%i/" % (turbine_output, i+1);
-    make_dir(instance) => {
-      file out <instance+"out.txt">;
-      file err <instance+"err.txt">;
-      (out,err) = run_model(model_sh, s, instance);
+app (void o) make_output_dir(string instance) {
+  "mkdir" "-p" (instance+"/output");
+}
+
+file model_sh = input(emews_root+"/scripts/growth_model.sh");
+file upf = input(argv("f"));
+string upf_lines[] = file_lines(upf);
+foreach s,i in upf_lines {
+  string instance = "%s/instance_%i/" % (turbine_output, i+1);
+  make_dir(instance) => {
+    cp_config_files(instance) => {
+      make_output_dir(instance) => {
+        file out <instance+"out.txt">;
+        file err <instance+"err.txt">;
+        (out,err) = run_model(model_sh, s, instance);
+      }
     }
   }
 }
