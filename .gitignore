@@ -3,3 +3,6 @@ experiments
 
 # Turbine output
 turbine-output
+
+# VS code settings
+.vscode
