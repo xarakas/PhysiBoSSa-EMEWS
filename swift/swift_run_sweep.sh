@@ -21,14 +21,14 @@ export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
 check_directory_exists
 
 # TODO edit the number of processes as required.
-export PROCS=16
+export PROCS=48
 
 # TODO edit QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME
 # as required. Note that QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME will
 # be ignored if the MACHINE variable (see below) is not set.
 # export QUEUE=main
-export WALLTIME=00:10:00
-export PPN=1
+export WALLTIME=00:30:00
+export PPN=3
 export TURBINE_JOBNAME="${EXPID}_job"
 
 # Extra argument passed to SLURM script
