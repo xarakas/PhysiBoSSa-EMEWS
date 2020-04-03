@@ -1,0 +1,9 @@
+[
+    {
+        "name" : "user_parameters.tnf_threshold",
+        "type" : "float",
+        "lower" : 0.15,
+        "upper" : 0.4,
+        "sigma": 0.01
+    }
+]

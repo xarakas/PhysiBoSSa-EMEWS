@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
 /*
 ###############################################################################
 # If you use PhysiCell in your project, please cite PhysiCell and the version #
@@ -66,116 +64,45 @@
 #                                                                             #
 ###############################################################################
 */
---> 
 
-<!--
-<user_details />
--->
+#include "../core/PhysiCell.h"
+#include "../modules/PhysiCell_standard_modules.h" 
 
-<PhysiCell_settings version="devel-version">
-	<domain>
-		<x_min>-500</x_min>
-		<x_max>500</x_max>
-		<y_min>-500</y_min>
-		<y_max>500</y_max>
-		<z_min>-500</z_min>
-		<z_max>500</z_max>
-		<dx>15</dx>
-		<dy>15</dy>
-		<dz>15</dz>
-		<use_2D>false</use_2D>
-	</domain>
-	
-	<overall>
-		<max_time units="min">1440</max_time>
-		<time_units>min</time_units>
-		<space_units>micron</space_units>
+#include "../addons/PhysiBoSSa/src/boolean_network.h"
 
-		<dt_diffusion units="min">0.02</dt_diffusion>
-		<dt_mechanics units="min">0.1</dt_mechanics>
-		<dt_phenotype units="min">2</dt_phenotype>	
-	</overall>
-	
-	<parallel>
-		<omp_num_threads>16</omp_num_threads>
-	</parallel> 
-	
-	<save>
-		<folder>output</folder> <!-- use . for root --> 
+using namespace BioFVM; 
+using namespace PhysiCell;
 
-		<full_data>
-			<interval units="min">30</interval>
-			<enable>false</enable>
-		</full_data>
-		
-		<SVG>
-			<interval units="min">30</interval>
-			<enable>false</enable>
-		</SVG>
-		
-		<legacy_data>
-			<enable>false</enable>
-		</legacy_data>
-	</save>
-	
-	<microenvironment_setup>
-		<variable name="oxygen" units="mmHg" ID="0">
-			<physical_parameter_set>
-				<diffusion_coefficient units="micron^2/min">100000.0</diffusion_coefficient>
-				<decay_rate units="1/min">.1</decay_rate> 
-			</physical_parameter_set>
-			<initial_condition units="mmHg">38.0</initial_condition>
-			<Dirichlet_boundary_condition units="mmHg" enabled="true">38.0</Dirichlet_boundary_condition>
-		</variable>
-		
-		<variable name="tnf" units="mmol" ID="1">
-			<physical_parameter_set>
-				<diffusion_coefficient units="micron^2/min">1200.0</diffusion_coefficient>
-				<decay_rate units="1/min">.0275</decay_rate> 
-			</physical_parameter_set>
-			<initial_condition units="mmol">0.0</initial_condition>
-			<Dirichlet_boundary_condition units="mmol" enabled="false">0.0</Dirichlet_boundary_condition>
-		</variable>
+struct init_record
+{
+	float x;
+	float y;
+	float z;
+	float radius;
+	int phase;
+	double elapsed_time;
+};
 
-		<options>
-			<calculate_gradients>true</calculate_gradients>
-			<track_internalized_substrates_in_each_agent>true</track_internalized_substrates_in_each_agent>
-			<!-- not yet supported --> 
-			<initial_condition type="matlab" enabled="false">
-				<filename>./config/initial.mat</filename>
-			</initial_condition>
-			<!-- not yet supported --> 
-			<dirichlet_nodes type="matlab" enabled="false">
-				<filename>./config/dirichlet.mat</filename>
-			</dirichlet_nodes>
-		</options>
-	</microenvironment_setup>		
-	
-	<user_parameters>
-		<random_seed type="int" units="dimensionless">0</random_seed> 
-		<!-- example parameters from the template --> 
-		
-		<!-- cell cycle custom duration -->
-		<live_phase_duration type="double" units="1/min">0.0075</live_phase_duration> <!-- 300 min -->
+// setup functions to help us along 
+void create_cell_types( void );
+void setup_tissue( void ); 
 
-		<!-- init file --> 
-		<init_cells_filename type="string" units="">../init.txt</init_cells_filename>
+// set up the BioFVM microenvironment 
+void setup_microenvironment( void ); 
 
-		<bnd_file type="string" units="">../boolean_network/TNF_nodes.bnd</bnd_file>
-		<cfg_file type="string" units="">../boolean_network/TNF_conf.cfg</cfg_file>
-		<maboss_time_step type="double" units="dimensionless">12.</maboss_time_step>
+// custom pathology coloring function 
+std::vector<std::string> my_coloring_function( Cell* );
 
-		<tnf_uptake_rate type="double" units="">0.0025</tnf_uptake_rate>
-		<tnf_secretion_rate type="double" units="fg/cell/min">0.1</tnf_secretion_rate> <!-- 0.1 -->
+// custom cell phenotype functions could go here 
+void tumor_cell_phenotype_with_signaling( Cell* pCell, Phenotype& phenotype, double dt );
 
-		<duration_add_tnf type="int" units="min">10</duration_add_tnf> <!-- 10 -->
-		<time_remove_tnf type="int" units="min">8000</time_remove_tnf> <!-- 8000 -->
-		<time_add_tnf type="int" units="min">150</time_add_tnf> <!-- 150 -->
+void update_custom_variables( Cell* pCell );
 
-		<tnf_threshold type="double" units="dimensionless">0.25</tnf_threshold> <!-- 2.8e-05 -->
-		<concentration_tnf type="double" units="ng/mL"> 0.5 </concentration_tnf> <!-- 0.5 -->
-		<membrane_length type="int" units=""> 470 </membrane_length>
-	</user_parameters>
-	
-	
-</PhysiCell_settings>
+void set_input_nodes(Cell* pCell); 
+void from_nodes_to_cell(Cell* pCell, Phenotype& phenotype, double dt);
+void do_proliferation( Cell* pCell, Phenotype& phenotype, double dt );
+
+std::vector<init_record> read_init_file(std::string filename, char delimiter, bool header);
+
+inline float sphere_volume_from_radius(float radius) {return 4/3 * PhysiCell_constants::pi * std::pow(radius, 3);}
+double total_live_cell_count();
