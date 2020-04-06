@@ -14,7 +14,7 @@ set -eu
 # !!! IF YOU CHANGE THE NUMBER OF ARGUMENTS PASSED TO THIS SCRIPT, YOU MUST
 # CHANGE THE TIMEOUT_ARG_INDEX !!!
 TIMEOUT=""
-TIMEOUT_ARG_INDEX=4
+TIMEOUT_ARG_INDEX=5
 if [[ $# ==  $TIMEOUT_ARG_INDEX ]]
 then
 	TIMEOUT=${!TIMEOUT_ARG_INDEX}
@@ -25,26 +25,34 @@ if [ -n "$TIMEOUT" ]; then
   TIMEOUT_CMD="timeout $TIMEOUT"
 fi
 
-# Set param_line from the first argument to this script
+# Set executable_path from the first argument to this script
+# executable_path is the string containing the model executable path.
+executable_path=$1
+
+# Set param_line from the second argument to this script
 # param_line is the string containing the model parameters for a run.
-param_line=$1
+param_line=$2
 
 # Set emews_root to the root directory of the project (i.e. the directory
 # that contains the scripts, swift, etc. directories and files)
-emews_root=$2
+emews_root=$3
 
 # Each model run, runs in its own "instance" directory
 # Set instance_directory to that and cd into it.
-instance_directory=$3
+instance_directory=$4
 cd $instance_directory
+
+
+mkdir -p output
+
 
 # TODO: Define the command to run the model. For example,
 # MODEL_CMD="python"
-MODEL_CMD=""
+MODEL_CMD="$executable_path"
 # TODO: Define the arguments to the MODEL_CMD. Each rguments should be
 # surrounded by quotes and separated by spaces. For example,
 # arg_array=("$emews_root/python/nt3_tc1_runner.py" "$parameter_string")
-arg_array=("$emews_root/data/PhysiBoSSa/spheroid_TNF" "$param_line")
+arg_array=("$param_line")
 COMMAND="$MODEL_CMD ${arg_array[@]}"
 
 # Turn bash error checking off. This is
