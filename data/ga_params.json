@@ -2,8 +2,43 @@
     {
         "name" : "user_parameters.tnf_threshold",
         "type" : "float",
-        "lower" : 0.15,
-        "upper" : 0.4,
+        "lower" : 0.1,
+        "upper" : 0.5,
         "sigma": 0.01
+    },    
+    {
+        "name" : "user_parameters.tnf_uptake_rate",
+        "type" : "float",
+        "lower" : 0.0,
+        "upper" : 2.0,
+        "sigma": 0.01
+    },    
+    {
+        "name" : "user_parameters.tnf_secretion_rate",
+        "type" : "float",
+        "lower" : 0.01,
+        "upper" : 1.0,
+        "sigma": 0.01
+    },    
+    {
+        "name" : "user_parameters.live_phase_duration",
+        "type" : "float",
+        "lower" : 0.0001,
+        "upper" : 0.01,
+        "sigma": 0.0001
+    },    
+    {
+        "name" : "user_parameters.maboss_time_step",
+        "type" : "float",
+        "lower" : 5.0,
+        "upper" : 20.0,
+        "sigma": 0.5
+    },
+    {
+        "name" : "user_parameters.duration_add_tnf",
+        "type" : "int",
+        "lower" : 1,
+        "upper" : 25,
+        "sigma": 1
     }
 ]
