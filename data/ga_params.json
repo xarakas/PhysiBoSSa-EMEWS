@@ -7,7 +7,7 @@
         "sigma": 0.01
     },    
     {
-        "name" : "user_parameters.tnf_uptake_rate",
+        "name" : "cell_definitions.cell_definition.phenotype.secretion.substrate.uptake_rate",
         "type" : "float",
         "lower" : 0.0,
         "upper" : 2.0,

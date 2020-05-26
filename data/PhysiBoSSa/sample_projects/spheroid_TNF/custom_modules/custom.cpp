@@ -78,83 +78,38 @@ void create_cell_types( void )
 	
 	SeedRandom( parameters.ints("random_seed") ); // or specify a seed here 
 	
-	// housekeeping 
-	
-	initialize_default_cell_definition();
-	cell_defaults.phenotype.secretion.sync_to_microenvironment( &microenvironment ); 
-	
-	// Name the default cell type 
-	cell_defaults.name = "tumor cell";
-	cell_defaults.type = 0; 
-	
-	// set default cell cycle model
-	cell_defaults.phenotype.cycle.sync_to_cycle_model( live );
+	/* 
+	   Put any modifications to default cell definition here if you 
+	   want to have "inherited" by other cell types. 
+	   
+	   This is a good place to set default functions. 
+	*/ 
 
-	// set default_cell_functions; 
+	cell_defaults.functions.volume_update_function = standard_volume_update_function;
+	cell_defaults.functions.update_velocity = standard_update_cell_velocity;
+	
+	cell_defaults.functions.update_migration_bias = NULL; 
 	cell_defaults.functions.update_phenotype = tumor_cell_phenotype_with_signaling;
-
-	// set the rate terms in the default phenotype 
-	// first find index for a few key variables. 
-	int necrosis_model_index = cell_defaults.phenotype.death.find_death_model_index( "Necrosis" );
-	int oxygen_substrate_index = microenvironment.find_density_index( "oxygen" ); 
-	int tnf_substrate_index = microenvironment.find_density_index( "tnf" ); 
-
-	// set cycle duration, apoptotic duration and rate and initially no necrosis 
-	int live_index = cell_defaults.phenotype.cycle.model().find_phase_index(PhysiCell_constants::live);
-	cell_defaults.phenotype.cycle.data.transition_rate(live_index, live_index) = parameters.doubles("live_phase_duration");
-
-	cell_defaults.phenotype.death.rates[necrosis_model_index] = 0.0; 
-
-	// set oxygen uptake / secretion parameters for the default cell type 
-	cell_defaults.phenotype.secretion.secretion_rates[oxygen_substrate_index] = 0;
-	cell_defaults.phenotype.secretion.uptake_rates[oxygen_substrate_index] = 10; 
-	cell_defaults.phenotype.secretion.saturation_densities[oxygen_substrate_index] = 38; 
-
-	cell_defaults.phenotype.secretion.secretion_rates[tnf_substrate_index] = 0;
-	cell_defaults.phenotype.secretion.uptake_rates[tnf_substrate_index] = parameters.doubles("tnf_uptake_rate"); 
-	cell_defaults.phenotype.secretion.saturation_densities[tnf_substrate_index] = 1; 
+	cell_defaults.functions.custom_cell_rule = NULL; 
 	
+	cell_defaults.functions.add_cell_basement_membrane_interactions = NULL; 
+	cell_defaults.functions.calculate_distance_to_membrane = NULL; 
+	
+	cell_defaults.functions.set_orientation = NULL;
+		
+	// set molecular properties 
+	int tnf_substrate_index = microenvironment.find_density_index( "tnf" ); 
 	cell_defaults.phenotype.molecular.fraction_released_at_death[tnf_substrate_index] = 0.0;
+	/*
+	   This parses the cell definitions in the XML config file. 
+	*/
+	initialize_cell_definitions_from_pugixml();
 
-	// add custom data here, if any
-	cell_defaults.custom_data.add_variable("next_physibossa_run", "dimensionless", 12.0);
-	cell_defaults.custom_data.add_variable("tnf_concentration", "dimensionless", 0);
-	cell_defaults.custom_data.add_variable("tnf_node", "dimensionless", 0);
-	cell_defaults.custom_data.add_variable("fadd_node", "dimensionless", 0);
+	build_cell_definitions_maps(); 
+	display_cell_definitions( std::cout ); 
 
 	return; 
 }
-
-
-void tumor_cell_phenotype_with_signaling( Cell* pCell, Phenotype& phenotype, double dt )
-{
-	static int o2_index = microenvironment.find_density_index( "oxygen" );
-	double o2 = pCell->nearest_density_vector()[o2_index];
-
-	update_cell_and_death_parameters_O2_based(pCell, phenotype, dt);
-
-	if( phenotype.death.dead == true )
-	{
-		pCell->functions.update_phenotype = NULL;
-		return;
-	}
-
-	if (PhysiCell_globals.current_time >= pCell->custom_data["next_physibossa_run"])
-	{
-		set_input_nodes(pCell);
-
-		pCell->boolean_network.run_maboss();
-		// Get noisy step size
-		double next_run_in = pCell->boolean_network.get_time_to_update();
-		pCell->custom_data["next_physibossa_run"] = PhysiCell_globals.current_time + next_run_in;
-		
-		update_custom_variables(pCell);
-
-		from_nodes_to_cell(pCell, phenotype, dt);
-	}
-}
-
-
 
 void setup_microenvironment( void )
 {
@@ -169,19 +124,6 @@ void setup_microenvironment( void )
 	initialize_microenvironment(); 	
 	
 	return; 
-}
-
-void update_custom_variables( Cell* pCell )
-{
-	std::vector<bool> * nodes = pCell->boolean_network.get_nodes();
-
-	int tnf_maboss_index = pCell->boolean_network.get_node_index("TNF");
-	int fadd_maboss_index = pCell->boolean_network.get_node_index("FADD");
-	static int tnf_index = microenvironment.find_density_index( "tnf" ); 
-
-	pCell->custom_data["tnf_concentration"] = pCell->phenotype.molecular.internalized_total_substrates[tnf_index];
-	pCell->custom_data["tnf_node"] = (*nodes)[tnf_maboss_index];
-	pCell->custom_data["fadd_node"] = (*nodes)[fadd_maboss_index];
 }
 
 void setup_tissue( void )
@@ -204,7 +146,7 @@ void setup_tissue( void )
 		int phase = cells[i].phase;
 		double elapsed_time = cells[i].elapsed_time;
 
-		pC = create_cell(); 
+		pC = create_cell(get_cell_definition("default")); 
 		pC->assign_position( x, y, z );
 		// pC->set_total_volume(sphere_volume_from_radius(radius));
 		
@@ -213,20 +155,60 @@ void setup_tissue( void )
 		
 		pC->boolean_network = tnf_network;
 		pC->boolean_network.restart_nodes();
-		pC->custom_data["next_physibossa_run"] = pC->boolean_network.get_time_to_update();
+		static int index_next_physibossa_run = pC->custom_data.find_variable_index("next_physibossa_run");
+		pC->custom_data.variables.at(index_next_physibossa_run).value = pC->boolean_network.get_time_to_update();
 		update_custom_variables(pC);
 	}
 
 	return; 
 }
 
+// custom cell phenotype function to run PhysiBoSSa when is needed
+void tumor_cell_phenotype_with_signaling( Cell* pCell, Phenotype& phenotype, double dt )
+{
+	update_cell_and_death_parameters_O2_based(pCell, phenotype, dt);
+	static int index_next_physibossa_run = pCell->custom_data.find_variable_index("next_physibossa_run");
+
+	if( phenotype.death.dead == true )
+	{
+		pCell->functions.update_phenotype = NULL;
+		return;
+	}
+
+	if (PhysiCell_globals.current_time >= pCell->custom_data.variables.at(index_next_physibossa_run).value)
+	{
+		set_input_nodes(pCell);
+
+		pCell->boolean_network.run_maboss();
+		// Get noisy step size
+		double next_run_in = pCell->boolean_network.get_time_to_update();
+		pCell->custom_data.variables.at(index_next_physibossa_run).value = PhysiCell_globals.current_time + next_run_in;
+		
+		update_custom_variables(pCell);
+
+		from_nodes_to_cell(pCell, phenotype, dt);
+	}
+}
+
 std::vector<std::string> my_coloring_function( Cell* pCell )
 {
-	// start with ki67 coloring 
+	// start with live coloring 
 	std::vector<std::string> output = false_cell_coloring_live_dead(pCell); 
 	return output; 
 }
 
+void update_custom_variables( Cell* pCell )
+{
+	static int tnf_index = microenvironment.find_density_index( "tnf" ); 
+	static int index_tnf_concentration = pCell->custom_data.find_variable_index("tnf_concentration");
+	static int index_tnf_node = pCell->custom_data.find_variable_index("tnf_node");
+	static int index_fadd_node = pCell->custom_data.find_variable_index("fadd_node");
+		
+	pCell->custom_data.variables.at(index_tnf_concentration).value = 
+		pCell->phenotype.molecular.internalized_total_substrates[tnf_index];
+	pCell->custom_data.variables.at(index_tnf_node).value = pCell->boolean_network.get_node_value("TNF");
+	pCell->custom_data.variables.at(index_fadd_node).value = pCell->boolean_network.get_node_value("FADD");
+}
 
 void set_input_nodes(Cell* pCell) {
 	static int tnf_index = microenvironment.find_density_index( "tnf" ); 
@@ -281,7 +263,10 @@ void from_nodes_to_cell(Cell* pCell, Phenotype& phenotype, double dt)
 	pCell->set_internal_uptake_constants(dt);
 }
 
-/* Go to proliferative if needed */
+// ***********************************************************
+// * NOTE: Funtion replicated from PhysiBoSS, but not used   *
+// *       as we use a live cycle model instead a Ki67 model *
+// ***********************************************************
 void do_proliferation( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	// If cells is in G0 (quiescent) switch to pre-mitotic phase
@@ -289,6 +274,9 @@ void do_proliferation( Cell* pCell, Phenotype& phenotype, double dt )
 		pCell->phenotype.cycle.advance_cycle(pCell, phenotype, dt);
 }
 
+// ***********************************************************
+// * NOTE: Funtion to read init files created with PhysiBoSS *
+// ***********************************************************
 std::vector<init_record> read_init_file(std::string filename, char delimiter, bool header) 
 { 
 	// File pointer 
