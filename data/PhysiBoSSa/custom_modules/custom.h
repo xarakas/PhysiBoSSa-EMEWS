@@ -106,3 +106,5 @@ std::vector<init_record> read_init_file(std::string filename, char delimiter, bo
 
 inline float sphere_volume_from_radius(float radius) {return 4/3 * PhysiCell_constants::pi * std::pow(radius, 3);}
 double total_live_cell_count();
+double total_death_cell_count();
+double total_necrosis_cell_count();

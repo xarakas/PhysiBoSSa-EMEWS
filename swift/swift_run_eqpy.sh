@@ -20,18 +20,18 @@ export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
 check_directory_exists
 
 # TODO edit the number of processes as required.
-export PROCS=30
+export PROCS=90
 
 # TODO edit QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME
 # as required. Note that QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME will
 # be ignored if MACHINE flag (see below) is not set
 export QUEUE=main
-export WALLTIME=02:00:00
+export WALLTIME=24:00:00
 export PPN=3
 export TURBINE_JOBNAME="${EXPID}_job"
 
 # Extra argument passed to SLURM script
-export TURBINE_SBATCH_ARGS=--qos=debug
+# export TURBINE_SBATCH_ARGS=--qos=debug
 
 # if R cannot be found, then these will need to be
 # uncommented and set correctly.
@@ -65,9 +65,9 @@ cp -r $DEFAULT_XML_SOURCE $DEFAULT_XML_OUT
 cp $GA_PARAMS_FILE_SOURCE $GA_PARAMS_FILE_OUT
 
 SEED=1234
-ITERATIONS=3
+ITERATIONS=15
 REPLICATIONS=1
-NUM_POPULATION=70
+NUM_POPULATION=150
 
 CMD_LINE_ARGS="$* -seed=$SEED -ni=$ITERATIONS -nv=$REPLICATIONS -np=$NUM_POPULATION -exe=$EXECUTABLE_OUT -settings=$DEFAULT_XML_OUT/PhysiCell_settings.xml -ga_parameters=$GA_PARAMS_FILE_OUT"
 

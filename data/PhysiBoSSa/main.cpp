@@ -224,7 +224,7 @@ int main( int argc, char* argv[] )
 				}
 
 				// output metrics 
-				metrics_file << PhysiCell_globals.current_time << "\t" << total_live_cell_count() << "\t" << std::endl; 
+				metrics_file << PhysiCell_globals.current_time << "\t" << total_live_cell_count() << "\t" << total_death_cell_count() << "\t" << total_necrosis_cell_count() << std::endl; 
 			}
 
 			/*
@@ -285,7 +285,7 @@ int main( int argc, char* argv[] )
 	std::cout << std::endl << "Total simulation runtime: " << std::endl; 
 	BioFVM::display_stopwatch_value( std::cout , BioFVM::runtime_stopwatch_value() ); 
 
-	metrics_file << PhysiCell_globals.current_time << "\t" << total_live_cell_count() << std::endl; 
+	metrics_file << PhysiCell_globals.current_time << "\t" << total_live_cell_count() << "\t" << total_death_cell_count() << "\t" << total_necrosis_cell_count() << std::endl; 
 	metrics_file.close();
 
 	return 0; 
