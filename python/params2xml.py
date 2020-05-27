@@ -3,7 +3,11 @@ import xml.etree.ElementTree as ET
 
 def update_param(name, val, root):
     xpath = name.replace(".", "/")
-    el = root.findall("./{}".format(xpath))[0]
+    el = root.findall("./{}".format(xpath))
+    if(len(el) == 1):
+        el = el[0]
+    else:
+        el = el[1]
     #print("{}: {}, {}".format(name, el.text, el.get('units')))
     value = str(val)
     if value.find(':') == -1:
