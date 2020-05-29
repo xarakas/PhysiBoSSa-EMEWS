@@ -4,7 +4,7 @@ set -eu
 
 if [ "$#" -ne 2 ]; then
   script_name=$(basename $0)
-  echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1)"
+  echo "Usage: ${script_name} EXPERIMENT_ID GA_PARAMS_FILE (e.g. ${script_name} experiment_1 data/ga_params.json)"
   exit 1
 fi
 

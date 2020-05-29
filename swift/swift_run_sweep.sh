@@ -2,9 +2,9 @@
 
 set -eu
 
-if [ "$#" -ne 1 ]; then
+if [ "$#" -ne 2 ]; then
   script_name=$(basename $0)
-  echo "Usage: ${script_name} EXPERIMENT_ID (e.g. ${script_name} experiment_1)"
+  echo "Usage: ${script_name} EXPERIMENT_ID INPUT (e.g. ${script_name} experiment_1 data/input.txt)"
   exit 1
 fi
 
@@ -21,18 +21,18 @@ export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
 check_directory_exists
 
 # TODO edit the number of processes as required.
-export PROCS=48
+export PROCS=30
 
 # TODO edit QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME
 # as required. Note that QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME will
 # be ignored if the MACHINE variable (see below) is not set.
-# export QUEUE=main
-export WALLTIME=00:30:00
+export QUEUE=main
+export WALLTIME=1:00:00
 export PPN=3
 export TURBINE_JOBNAME="${EXPID}_job"
 
 # Extra argument passed to SLURM script
-export TURBINE_SBATCH_ARGS=--qos=debug
+# export TURBINE_SBATCH_ARGS=--qos=debug
 
 # if R cannot be found, then these will need to be
 # uncommented and set correctly.
@@ -40,12 +40,27 @@ export TURBINE_SBATCH_ARGS=--qos=debug
 # export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$R_HOME/lib
 # if python packages can't be found, then uncommited and set this
 # export PYTHONPATH=/path/to/python/packages
+export PYTHONPATH=$EMEWS_PROJECT_ROOT/python
 
 
 # TODO edit command line arguments as appropriate
 # for your run. Note that the default $* will pass all of this script's
 # command line arguments to the swift script.
-CMD_LINE_ARGS="$*"
+mkdir -p $TURBINE_OUTPUT
+
+EXECUTABLE_SOURCE=$EMEWS_PROJECT_ROOT/data/PhysiBoSSa/spheroid_TNF
+DEFAULT_XML_SOURCE=$EMEWS_PROJECT_ROOT/data/PhysiBoSSa/config/*
+PARAMS_FILE_SOURCE=$2
+
+EXECUTABLE_OUT=$TURBINE_OUTPUT/spheroid_TNF
+DEFAULT_XML_OUT=$TURBINE_OUTPUT
+PARAMS_FILE_OUT=$TURBINE_OUTPUT/input.txt
+
+cp $EXECUTABLE_SOURCE $EXECUTABLE_OUT
+cp -r $DEFAULT_XML_SOURCE $DEFAULT_XML_OUT
+cp $PARAMS_FILE_SOURCE $PARAMS_FILE_OUT
+
+CMD_LINE_ARGS="$* -f=$EMEWS_PROJECT_ROOT/data/input.txt -exe=$EXECUTABLE_OUT -settings=$DEFAULT_XML_OUT/PhysiCell_settings.xml -parameters=$PARAMS_FILE_OUT"
 
 # set machine to your schedule type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
@@ -64,5 +79,5 @@ log_script
 
 # echo's anything following this standard out
 set -x
-
-swift-t -n $PROCS $MACHINE -p $EMEWS_PROJECT_ROOT/swift/swift_run_sweep.swift -f="$EMEWS_PROJECT_ROOT/data/input.txt" $CMD_LINE_ARGS
+SWIFT_FILE=swift_run_sweep.swift
+swift-t -n $PROCS $MACHINE -p $EMEWS_PROJECT_ROOT/swift/$SWIFT_FILE $CMD_LINE_ARGS

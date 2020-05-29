@@ -72,8 +72,10 @@ app (file out, file err) run_model (string model_sh, string executable_path, str
         file err <instance_dir + "err.txt">;
         string model_sh = emews_root + "/scripts/growth_model.sh";
         python_persist(code, "'ignore'") =>
-        (out,err) = run_model(model_sh, executable, xml_out, instance_dir) =>
-        cell_counts[replication] = get_result(instance_dir);
+        (out,err) = run_model(model_sh, executable, xml_out, instance_dir) => {
+          cell_counts[replication] = get_result(instance_dir);
+          rm_dir(instance_dir);
+        }
       }
     }
 
