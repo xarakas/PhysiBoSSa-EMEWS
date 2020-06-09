@@ -52,15 +52,15 @@ EXECUTABLE_SOURCE=$EMEWS_PROJECT_ROOT/data/PhysiBoSSa/spheroid_TNF
 DEFAULT_XML_SOURCE=$EMEWS_PROJECT_ROOT/data/PhysiBoSSa/config/*
 PARAMS_FILE_SOURCE=$2
 
-EXECUTABLE_OUT=$TURBINE_OUTPUT/spheroid_TNF
+EXECUTABLE_OUT=$TURBINE_OUTPUT/$(basename $EXECUTABLE_SOURCE)
 DEFAULT_XML_OUT=$TURBINE_OUTPUT
-PARAMS_FILE_OUT=$TURBINE_OUTPUT/input.txt
+PARAMS_FILE_OUT=$TURBINE_OUTPUT/$(basename $PARAMS_FILE_SOURCE)
 
 cp $EXECUTABLE_SOURCE $EXECUTABLE_OUT
 cp -r $DEFAULT_XML_SOURCE $DEFAULT_XML_OUT
 cp $PARAMS_FILE_SOURCE $PARAMS_FILE_OUT
 
-CMD_LINE_ARGS="$* -f=$EMEWS_PROJECT_ROOT/data/input.txt -exe=$EXECUTABLE_OUT -settings=$DEFAULT_XML_OUT/PhysiCell_settings.xml -parameters=$PARAMS_FILE_OUT"
+CMD_LINE_ARGS="$* -exe=$EXECUTABLE_OUT -settings=$DEFAULT_XML_OUT/PhysiCell_settings.xml -parameters=$PARAMS_FILE_OUT"
 
 # set machine to your schedule type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
