@@ -1,4 +1,5 @@
-To launch EMEWS workflows in MN4 we need to run some coMmands beforehand:
+=========================================================================
+To launch EMEWS workflows in MN4 we need to run some commands beforehand:
 
 # assing more memory for swift VM
 salloc -p interactive --cpus-per-task=2
@@ -9,7 +10,18 @@ module load python java R/3.4.0 swiftt/1.4.3
 The first command will request 2 login nodes, and we are interested in that because we can't launch swift-t with 2GB of ram. Using 2 nodes allow us to gather 4GB, and thus to launch swift-t without issues.
 The second command will load swift-t and dependencies.
 
-Currently there are two implemented strategies:
+=========================================================================
+
+This project forked from Gerard's repo, implements a basic model of the TNF fate model pulse experiments.
+The code for de model is placed in data/PhysiBoSSa
+
+Before running the TNF model must be compiled:
+
+cd data/PhysiBoSSa
+make
+cd ../..
+
+Currently there are two implemented exploration strategies:
 
 =============
 - GA search 
