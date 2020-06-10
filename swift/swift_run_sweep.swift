@@ -42,6 +42,10 @@ app (file out, file err) run_model (file shfile, string executable, string param
     "bash" shfile executable param_line emews_root instance @stdout=out @stderr=err;
 }
 
+app (void o) summarize_simulation (file summarize_py, string instance_dir) {
+    "python" summarize_py instance_dir;
+}
+
 (string result) get_result(string instance_dir) {
   // Use a few lines of R code to read the output file
   // See the read_last_row variable above
@@ -57,6 +61,11 @@ app (void o) make_output_dir(string instance) {
   "mkdir" "-p" (instance+"/output");
 }
 
+// deletes the specified directory
+app (void o) rm_dir(string dirname) {
+  "rm" "-rf" dirname;
+}
+
 main() {
 
   string executable = argv("exe");
@@ -64,6 +73,8 @@ main() {
 
   file model_sh = input(emews_root+"/scripts/growth_model.sh");
   file upf = input(argv("parameters"));
+
+  file summarize_py = input(emews_root+"/scripts/summarize_simulation.py");
 
   string results[];
   
@@ -76,22 +87,26 @@ main() {
         string code = to_xml_code % (params, i, default_xml, xml_out);
         file out <instance_dir+"out.txt">;
         file err <instance_dir+"err.txt">;
-        python_persist(code, "'ignore'") => 
-        (out,err) = run_model(model_sh, executable, xml_out, instance_dir) => 
-          results[i] = get_result(instance_dir);
+        python_persist(code, "'ignore'") => {
+          (out,err) = run_model(model_sh, executable, xml_out, instance_dir) => {
+            // results[i] = get_result(instance_dir);
+            summarize_simulation (summarize_py, instance_dir) =>
+              rm_dir(instance_dir + "output/");
+          }
+        }
       }
     }
   }
 
-  string results_str = string_join(results, ",");
-  string code = find_min % results_str;
-  string mins = R(code, "toString(res)");
-  string min_idxs[] = split(mins, ",");
-  string best_params[];
-  foreach s, i in min_idxs {
-    int idx = toint(trim(s));
-    best_params[i] = upf_lines[idx - 1];
-  }
-  file best_out <turbine_output + "/output/best_parameters.txt"> =
-    write(string_join(best_params, "\n"));
+  // string results_str = string_join(results, ",");
+  // string code = find_min % results_str;
+  // string mins = R(code, "toString(res)");
+  // string min_idxs[] = split(mins, ",");
+  // string best_params[];
+  // foreach s, i in min_idxs {
+    // int idx = toint(trim(s));
+    // best_params[i] = upf_lines[idx - 1];
+  // }
+  //file best_out <turbine_output + "/output/best_parameters.txt"> =
+  //  write(string_join(best_params, "\n"));
 }

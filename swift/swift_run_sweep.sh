@@ -21,18 +21,19 @@ export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
 check_directory_exists
 
 # TODO edit the number of processes as required.
-export PROCS=30
+export PROCS=48
 
 # TODO edit QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME
 # as required. Note that QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME will
 # be ignored if the MACHINE variable (see below) is not set.
 export QUEUE=main
-export WALLTIME=1:00:00
+export WALLTIME=47:59:00
 export PPN=3
 export TURBINE_JOBNAME="${EXPID}_job"
 
 # Extra argument passed to SLURM script
-# export TURBINE_SBATCH_ARGS=--qos=debug
+# options debug, bsc_ls
+export TURBINE_SBATCH_ARGS=--qos=bsc_ls
 
 # if R cannot be found, then these will need to be
 # uncommented and set correctly.
@@ -48,19 +49,20 @@ export PYTHONPATH=$EMEWS_PROJECT_ROOT/python
 # command line arguments to the swift script.
 mkdir -p $TURBINE_OUTPUT
 
-EXECUTABLE_SOURCE=$EMEWS_PROJECT_ROOT/data/PhysiBoSSa/spheroid_TNF
+
+EXECUTABLE_SOURCE=$EMEWS_PROJECT_ROOT/data/PhysiBoSSa/spheroid_TNF_v2
 DEFAULT_XML_SOURCE=$EMEWS_PROJECT_ROOT/data/PhysiBoSSa/config/*
 PARAMS_FILE_SOURCE=$2
 
-EXECUTABLE_OUT=$TURBINE_OUTPUT/spheroid_TNF
+EXECUTABLE_OUT=$TURBINE_OUTPUT/$(basename $EXECUTABLE_SOURCE)
 DEFAULT_XML_OUT=$TURBINE_OUTPUT
-PARAMS_FILE_OUT=$TURBINE_OUTPUT/input.txt
+PARAMS_FILE_OUT=$TURBINE_OUTPUT/$(basename $PARAMS_FILE_SOURCE)
 
 cp $EXECUTABLE_SOURCE $EXECUTABLE_OUT
 cp -r $DEFAULT_XML_SOURCE $DEFAULT_XML_OUT
 cp $PARAMS_FILE_SOURCE $PARAMS_FILE_OUT
 
-CMD_LINE_ARGS="$* -f=$EMEWS_PROJECT_ROOT/data/input.txt -exe=$EXECUTABLE_OUT -settings=$DEFAULT_XML_OUT/PhysiCell_settings.xml -parameters=$PARAMS_FILE_OUT"
+CMD_LINE_ARGS="$* -exe=$EXECUTABLE_OUT -settings=$DEFAULT_XML_OUT/PhysiCell_settings.xml -parameters=$PARAMS_FILE_OUT"
 
 # set machine to your schedule type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
