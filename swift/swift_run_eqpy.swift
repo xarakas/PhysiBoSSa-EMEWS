@@ -51,6 +51,10 @@ app (file out, file err) run_model (string model_sh, string executable_path, str
     "bash" model_sh executable_path settings_file emews_root instance @stdout=out @stderr=err;
 }
 
+app (void o) summarize_simulation (file summarize_py, string instance_dir) {
+    "python" summarize_py instance_dir;
+}
+
 (string result) get_result(string instance_dir) {
   // Use a few lines of R code to read the output file
   // See the read_last_row variable above
@@ -60,6 +64,7 @@ app (file out, file err) run_model (string model_sh, string executable_path, str
 
 (string result) run_obj(string custom_parameters, int ga_iteration, int parameter_iteration, int num_replications, string executable, string default_xml)
 {
+    file summarize_py = input(emews_root + "/scripts/summarize_simulation.py");
     string cell_counts[];
     foreach replication in [0:num_replications-1:1] {
       // make instance dir
@@ -74,6 +79,7 @@ app (file out, file err) run_model (string model_sh, string executable_path, str
         python_persist(code, "'ignore'") =>
         (out,err) = run_model(model_sh, executable, xml_out, instance_dir) => {
           cell_counts[replication] = get_result(instance_dir);
+          summarize_simulation (summarize_py, instance_dir) =>
           rm_dir(instance_dir);
         }
       }

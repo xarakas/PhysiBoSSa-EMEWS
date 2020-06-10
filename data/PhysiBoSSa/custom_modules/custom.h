@@ -101,3 +101,12 @@ void update_monitor_variables( Cell* pCell );
 std::vector<init_record> read_init_file(std::string filename, char delimiter, bool header);
 
 inline float sphere_volume_from_radius(float radius) {return 4/3 * PhysiCell_constants::pi * std::pow(radius, 3);}
+
+// count the number of alive cells at current time step
+double total_live_cell_count();
+
+// count the number of total dead cells at current time step
+double total_dead_cell_count();
+
+// count the number of necrotic cells at current time step
+double total_necrosis_cell_count();

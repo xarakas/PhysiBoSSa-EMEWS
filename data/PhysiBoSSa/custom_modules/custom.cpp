@@ -332,3 +332,43 @@ std::vector<init_record> read_init_file(std::string filename, char delimiter, bo
 	
 	return result;
 }
+
+
+double total_live_cell_count()
+{
+	double out = 0.0;
+	
+	for( int i=0; i < (*all_cells).size() ; i++ )
+	{
+		if( (*all_cells)[i]->phenotype.death.dead == false && (*all_cells)[i]->type == 0 )
+		{ out += 1.0; } 
+	}
+	
+	return out; 
+}
+
+double total_dead_cell_count()
+{
+	double out = 0.0;
+	
+	for( int i=0; i < (*all_cells).size() ; i++ )
+	{
+		if( (*all_cells)[i]->phenotype.death.dead == true && (*all_cells)[i]->phenotype.death.current_death_model_index == 0 )
+		{ out += 1.0; } 
+	}
+	
+	return out; 
+}
+
+double total_necrosis_cell_count()
+{
+	double out = 0.0;
+	
+	for( int i=0; i < (*all_cells).size() ; i++ )
+	{
+		if( (*all_cells)[i]->phenotype.death.dead == true && (*all_cells)[i]->phenotype.death.current_death_model_index == 1 )
+		{ out += 1.0; } 
+	}
+	
+	return out; 
+}
