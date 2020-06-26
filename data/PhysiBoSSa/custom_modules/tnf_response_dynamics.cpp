@@ -28,7 +28,6 @@ void tnf_dynamics_model_setup()
 	tnf_dynamics_info.register_model();
 }
 
-
 void tnf_dynamics_model( Cell* pCell, Phenotype& phenotype, double dt )
 {
 	static int nTNF_external = microenvironment.find_density_index( "tnf" );
@@ -116,7 +115,6 @@ void update_boolean_model_input( Cell* pCell, Phenotype& phenotype, double dt )
     { pCell->boolean_network.set_node_value("TNF", 0); }
 
 }
-
 
 void update_cell_state_model_based(Cell* pCell, Phenotype& phenotype, double dt)
 {	

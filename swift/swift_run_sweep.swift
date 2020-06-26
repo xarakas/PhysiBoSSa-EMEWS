@@ -71,13 +71,11 @@ main() {
   string executable = argv("exe");
   string default_xml = argv("settings");
 
-  file model_sh = input(emews_root+"/scripts/growth_model.sh");
+  file model_sh = input(emews_root + "/scripts/growth_model.sh");
   file upf = input(argv("parameters"));
-
-  file summarize_py = input(emews_root+"/scripts/summarize_simulation.py");
+  file summarize_py = input(emews_root + "/scripts/summarize_simulation.py");
 
   string results[];
-  
   string upf_lines[] = file_lines(upf);
   foreach params,i in upf_lines {
     string instance_dir = "%s/instance_%i/" % (turbine_output, i+1);
