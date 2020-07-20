@@ -75,13 +75,13 @@ app (void o) summarize_simulation (file summarize_py, string instance_dir) {
   result = python_persist(code, "str(count)");
 }
 
-(string result) run_obj(string custom_parameters, int ga_iteration, int parameter_iteration, int num_replications, string executable, string default_xml)
+(string result) run_obj(string custom_parameters, int rf_iteration, int parameter_iteration, int num_replications, string executable, string default_xml)
 {
     file summarize_py = input(emews_root + "/scripts/summarize_simulation.py");
     string cell_counts[];
     foreach replication in [0:num_replications-1:1] {
       // make instance dir
-      string instance_dir = "%s/instance_%i_%i_%i/" % (turbine_output, ga_iteration, parameter_iteration, replication+1);
+      string instance_dir = "%s/instance_%i_%i_%i/" % (turbine_output, rf_iteration, parameter_iteration, replication+1);
       make_dir(instance_dir) => {
         string xml_out = instance_dir + "settings.xml";
         // replication iteration used as a seed
@@ -103,6 +103,9 @@ app (void o) summarize_simulation (file summarize_py, string instance_dir) {
     string code = result_template % cell_counts_string;
     result = python_persist(code, "str(res)");
 
+    // string cell_counts_string = string_join(cell_counts, ",");
+    // string code = result_template % cell_counts_string;
+    // result = R(code, "toString(res)");
 }
 
 (void v) loop (location ME, int trials, string executable_model, string default_xml) {
@@ -163,7 +166,7 @@ app (void o) summarize_simulation (file summarize_py, string instance_dir) {
 // TODO
 // Edit function arguments to include those passed from main function
 // below
-(void o) start (int ME_rank, int num_iterations, int num_population, int num_variations, int random_seed, string ga_parameters_file, string executable_model, string default_xml) {
+(void o) start (int ME_rank, int num_iterations, int num_estimators, int num_init_population, int num_population, int num_variations, int random_seed, string rf_parameters_file, string executable_model, string default_xml) {
     location ME = locationFromRank(ME_rank);
     // TODO: Edit algo_params to include those required by the python
     // algorithm.
@@ -172,8 +175,8 @@ app (void o) summarize_simulation (file summarize_py, string instance_dir) {
     // By default we are passing a random seed. String parameters
     // should be passed with a \"%s\" format string.
     // e.g. algo_params = "%d,%\"%s\"" % (random_seed, "ABC");
-    string algo_params = "%d,%d,%d,'%s'" %  (num_iterations, num_population, random_seed, ga_parameters_file);
-    EQPy_init_package(ME,"deap_ga") =>
+    string algo_params = "%d,%d,%d,%d,%d,'%s'" %  (num_iterations, num_estimators, num_init_population, num_population, random_seed, rf_parameters_file);
+    EQPy_init_package(ME,"rand_forest") =>
     EQPy_get(ME) =>
     EQPy_put(ME, algo_params) =>
       loop(ME, num_variations, executable_model, default_xml) => {
@@ -203,15 +206,17 @@ main() {
   string default_xml = argv("settings");
 
   int random_seed = toint(argv("seed", "0"));
-  int num_variations = toint(argv("nv", "3"));
   int num_iterations = toint(argv("ni","10"));
+  int num_variations = toint(argv("nv", "1"));
+  int num_estimators = toint(argv("ne", "3"));
+  int num_init_population = toint(argv("nip", "5"));
   int num_population = toint(argv("np", "5"));
-  string ga_parameters_file = argv("ga_parameters");
+  string rf_parameters_file = argv("rf_parameters");
 
   // PYTHONPATH needs to be set for python code to be run
   assert(strlen(getenv("PYTHONPATH")) > 0, "Set PYTHONPATH!");
   assert(strlen(emews_root) > 0, "Set EMEWS_PROJECT_ROOT!");
   
   int rank = string2int(r_ranks[0]);
-  start(rank, num_iterations, num_population, num_variations, random_seed, ga_parameters_file, executable, default_xml);
+  start(rank, num_iterations, num_estimators, num_init_population, num_population, num_variations, random_seed, rf_parameters_file, executable, default_xml);
 }

@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import random, json, sys, math
+import numpy as np
 
 def is_number(s):
     try:
@@ -70,6 +71,10 @@ class FloatParameter(NumericParameter):
 
     def parse(self, s):
         return float(s)
+
+    def get_points(self, n_points):
+        step = (self.upper - self.lower)/n_points
+        return [float('%.4g' % x) for x in np.arange(self.lower, self.upper, step)]
 
 #import logging
 #logging.basicConfig()

@@ -8,6 +8,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from multicellds import MultiCellDS
 
+pd.options.mode.chained_assignment = None
+
 
 def get_timeserie_mean(mcds, filter_alive=True):
     time = []

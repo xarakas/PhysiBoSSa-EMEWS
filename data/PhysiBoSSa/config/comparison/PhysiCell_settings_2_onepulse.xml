@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+< onepulse />
+-->
+
 <!--
 /*
 ###############################################################################
@@ -243,10 +248,10 @@
                 <cfg_file type="string" units="">../boolean_network/TNF_conf.cfg</cfg_file>
 		<maboss_time_step type="double" units="dimensionless">10.</maboss_time_step>
 
-		<time_add_tnf type="int" units="min">150</time_add_tnf> <!-- 150 -->
-		<duration_add_tnf type="int" units="min">10</duration_add_tnf> <!-- 10 -->
+		<time_add_tnf type="int" units="min">80000</time_add_tnf> <!-- 150 -->
+		<duration_add_tnf type="int" units="min">600</duration_add_tnf> <!-- 10 -->
 		<concentration_tnf type="double" units="TNF/um^3"> 0.02 </concentration_tnf> <!-- 0.5 ng/mL -->
-		<time_remove_tnf type="int" units="min">100000</time_remove_tnf> <!-- 8000 -->
+		<time_remove_tnf type="int" units="min">80000</time_remove_tnf> <!-- 8000 -->
 		<membrane_length type="int" units=""> 470 </membrane_length>
 
 </user_parameters>

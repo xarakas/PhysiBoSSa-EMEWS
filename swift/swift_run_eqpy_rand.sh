@@ -4,7 +4,7 @@ set -eu
 
 if [ "$#" -ne 2 ]; then
   script_name=$(basename $0)
-  echo "Usage: ${script_name} EXPERIMENT_ID GA_PARAMS_FILE (e.g. ${script_name} experiment_1 data/ga_params.json)"
+  echo "Usage: ${script_name} EXPERIMENT_ID RF_PARAMS_FILE (e.g. ${script_name} experiment_1 data/rf_params.json)"
   exit 1
 fi
 
@@ -21,7 +21,7 @@ export TURBINE_OUTPUT=$EMEWS_PROJECT_ROOT/experiments/$EXPID
 check_directory_exists
 
 # TODO edit the number of processes as required.
-export PROCS=90
+export PROCS=4
 
 # TODO edit QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME
 # as required. Note that QUEUE, WALLTIME, PPN, AND TURNBINE_JOBNAME will
@@ -55,30 +55,33 @@ mkdir -p $TURBINE_OUTPUT
 
 EXECUTABLE_SOURCE=$EMEWS_PROJECT_ROOT/data/PhysiBoSSa/spheroid_TNF_v2
 DEFAULT_XML_SOURCE=$EMEWS_PROJECT_ROOT/data/PhysiBoSSa/config/*
-GA_PARAMS_FILE_SOURCE=$2
+RF_PARAMS_FILE_SOURCE=$2
 
 EXECUTABLE_OUT=$TURBINE_OUTPUT/spheroid_TNF
 DEFAULT_XML_OUT=$TURBINE_OUTPUT
-GA_PARAMS_FILE_OUT=$TURBINE_OUTPUT/TNF_v2_ga_params.json
+RF_PARAMS_FILE_OUT=$TURBINE_OUTPUT/TNF_v2_rf_params.json
 
 cp $EXECUTABLE_SOURCE $EXECUTABLE_OUT
 cp -r $DEFAULT_XML_SOURCE $DEFAULT_XML_OUT
-cp $GA_PARAMS_FILE_SOURCE $GA_PARAMS_FILE_OUT
+cp $RF_PARAMS_FILE_SOURCE $RF_PARAMS_FILE_OUT
 
-SEED=1234
-ITERATIONS=15
-REPLICATIONS=1
-NUM_POPULATION=150
+SEED=1234 # Do not change SEED for this RF exploration code
+VARIATIONS=1 # Number of variations
+ITERATIONS=2 # Number of iterations
+ESTIMATORS=5 # Classification trees to be combined for a random forest
+INIT_POINTS=2 # Points added to initial trainning dataset
+NUM_POINTS=5 # Upper bound on points to be evaluated per iteration
 
-CMD_LINE_ARGS="$* -seed=$SEED -ni=$ITERATIONS -nv=$REPLICATIONS -np=$NUM_POPULATION -exe=$EXECUTABLE_OUT -settings=$DEFAULT_XML_OUT/PhysiCell_settings.xml -ga_parameters=$GA_PARAMS_FILE_OUT"
+
+CMD_LINE_ARGS="$* -seed=$SEED -ni=$ITERATIONS -nv=$VARIATIONS -ne=$ESTIMATORS -nip=$INIT_POINTS -np=$NUM_POINTS -exe=$EXECUTABLE_OUT -settings=$DEFAULT_XML_OUT/PhysiCell_settings.xml -rf_parameters=$RF_PARAMS_FILE_OUT"
 
 # Uncomment this for the BG/Q:
 #export MODE=BGQ QUEUE=default
 
 # set machine to your schedule type (e.g. pbs, slurm, cobalt etc.),
 # or empty for an immediate non-queued unscheduled run
-MACHINE="slurm"
-# MACHINE=""
+# MACHINE="slurm"
+MACHINE=""
 
 if [ -n "$MACHINE" ]; then
   MACHINE="-m $MACHINE"
@@ -93,5 +96,5 @@ log_script
 
 # echo's anything following this to standard out
 set -x
-SWIFT_FILE=swift_run_eqpy.swift
+SWIFT_FILE=swift_run_eqpy_rand.swift
 swift-t -n $PROCS $MACHINE -p -I $EQPY -r $EQPY $EMEWS_PROJECT_ROOT/swift/$SWIFT_FILE $CMD_LINE_ARGS
