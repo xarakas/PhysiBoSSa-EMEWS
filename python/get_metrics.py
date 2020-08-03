@@ -1,5 +1,4 @@
 import os, sys, glob
-from dtw import dtw
 from scipy.spatial import distance
 
 def get_tumor_cell_count(instance_dir):
@@ -46,13 +45,6 @@ def get_custom_cell_count(instance_dir):
             output = tumor_percent - necrosis_percent
 
     return output
-
-def d(a, b):
-    return (abs(a[0] - b[0]) + abs(a[1] - b[1]) + abs(a[2] - b[2]))
-
-def dtw_dist(x, y):
-    dst, _, _, _ = dtw(x, y, dist=d)
-    return dst
 
 def eucl_dist(x, y):
     dst = distance.euclidean(x, y)
