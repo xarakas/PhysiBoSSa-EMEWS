@@ -75,7 +75,7 @@ INIT_POINTS=2 # Points added to initial trainning dataset
 NUM_POINTS=5 # Upper bound on points to be evaluated per iteration
 
 
-CMD_LINE_ARGS="$* -seed=$SEED -ni=$ITERATIONS -nv=$COMPARISONS -ne=$ESTIMATORS -nip=$INIT_POINTS -np=$NUM_POINTS -exe=$EXECUTABLE_OUT -settings=$DEFAULT_XML_OUT/PhysiCell_settings.xml -rf_parameters=$RF_PARAMS_FILE_OUT"
+CMD_LINE_ARGS="$* -seed=$SEED -ni=$ITERATIONS -nv=$COMPARISONS -ne=$ESTIMATORS -nip=$INIT_POINTS -np=$NUM_POINTS -exe=$EXECUTABLE_OUT -settings=$CMP_XML_OUT -rf_parameters=$RF_PARAMS_FILE_OUT"
 
 # Uncomment this for the BG/Q:
 #export MODE=BGQ QUEUE=default
