@@ -98,5 +98,5 @@ log_script
 
 # echo's anything following this to standard out
 set -x
-SWIFT_FILE=swift_run_eqpy_compare.swift
+SWIFT_FILE=swift_run_eqpy_rand_compare.swift
 swift-t -n $PROCS $MACHINE -p -I $EQPY -r $EQPY $EMEWS_PROJECT_ROOT/swift/$SWIFT_FILE $CMD_LINE_ARGS
