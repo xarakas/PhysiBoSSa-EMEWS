@@ -135,13 +135,13 @@ def run():
 
     x = make_random_points(num_init_population) 
     evals = evaluate(x)
-    y = (list(map(lambda v : 0 if v>5770 else 1, evals)))
+    y = (list(map(lambda v : 0 if v>6000 else 1, evals)))
 
     zeros, ones = y.count(0), y.count(1)
     printf("--- Init dataset has: {} positive and {} negative samples".format(ones,zeros))
 
-    printf("--- Round -1 points: ",x)
-    printf("--- Round -1 evaluations: ",evals)
+    printf("--- Round -1 points: {}".format(x))
+    printf("--- Round -1 evaluations: {}".format(evals))
     
     # Train the init random forest
 
@@ -181,10 +181,10 @@ def run():
         # Evaluate selected points
         labels = []
         evals = evaluate(selected_points)
-        labels = (list(map(lambda v : 0 if v>5770 else 1, evals)))
+        labels = (list(map(lambda v : 0 if v>6000 else 1, evals)))
 
-        printf("--- Round {} points: ".format(i),selected_points)
-        printf("--- Round {} evaluations: ".format(i),evals)
+        printf("--- Round {} points: {}".format(i,selected_points))
+        printf("--- Round {} evaluations: {}".format(i,evals))
 
         # Add evaluated points to the training set and re-train random forest
         x += selected_points
