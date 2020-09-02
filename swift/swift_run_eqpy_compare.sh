@@ -69,7 +69,7 @@ CMP_XML_OUT=$DEFAULT_XML_OUT/comparison
 
 SEED=1234
 ITERATIONS=2
-COMPARISONS=4 # Comparisons. Do NOT change this, unless number of files in the location "DEFAULT_XML_OUT/comparison/" changes.
+COMPARISONS=2 # Comparisons. Do NOT change this, unless number of files in the location "DEFAULT_XML_OUT/comparison/" changes.
 NUM_POPULATION=2
 
 CMD_LINE_ARGS="$* -seed=$SEED -ni=$ITERATIONS -nv=$COMPARISONS -np=$NUM_POPULATION -exe=$EXECUTABLE_OUT -settings=$CMP_XML_OUT -ga_parameters=$GA_PARAMS_FILE_OUT"

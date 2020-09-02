@@ -68,7 +68,7 @@ cp $RF_PARAMS_FILE_SOURCE $RF_PARAMS_FILE_OUT
 CMP_XML_OUT=$DEFAULT_XML_OUT/comparison
 
 SEED=1234 # Do not change SEED for this RF exploration code
-COMPARISONS=4 # Comparisons. Do NOT change this, unless number of files in the location "DEFAULT_XML_OUT/comparison/" changes.
+COMPARISONS=2 # Comparisons. Do NOT change this, unless number of files in the location "DEFAULT_XML_OUT/comparison/" changes.
 ITERATIONS=2 # Number of iterations
 ESTIMATORS=5 # Classification trees to be combined for a random forest
 INIT_POINTS=2 # Points added to initial trainning dataset
