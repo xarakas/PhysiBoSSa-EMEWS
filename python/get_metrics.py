@@ -118,6 +118,14 @@ def get_simulation_dist(instance_dir, replication, emews_root):
                         alive.append(float(data[2]))
                         apoptotic.append(float(data[3]))
                         necrotic.append(float(data[4]))
+                    norm_val = max(alive)
+                    alive[:] = [x / norm_val for x in alive]
+                    apoptotic[:] = [x / norm_val for x in apoptotic]
+                    necrotic[:] = [x / norm_val for x in necrotic]
+
+                    tumor_cells[:] = [x / norm_val for x in tumor_cells]
+                    death_cells[:] = [x / norm_val for x in death_cells]
+                    necrosis_cells[:] = [x / norm_val for x in necrosis_cells]
 
                     start_eucl = datetime.now()
                     output = eucl_dist(alive, tumor_cells)
