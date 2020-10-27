@@ -26,7 +26,7 @@ import itertools
 params = json.loads('%s')
 
 replication = '%s'
-params['user_parameters.random_seed'] = replication
+params['user_parameters.random_seed'] = '1234'
 
 default_settings_loc = '%s'
 xml_out = '%s'
@@ -46,7 +46,7 @@ x = '%s'.split(',')
 x = [float(xx) for xx in x]
 
 if len(x) > 0:
-  res = statistics.mean(x)
+  res = sum(x)
 else: 
   res = 9999999999
 """;
@@ -83,6 +83,10 @@ app (file out, file err) run_model (string model_sh, string executable_path, str
     "bash" model_sh executable_path settings_file emews_root instance @stdout=out @stderr=err;
 }
 
+app (void o) move_file(string filepath, string folderpath) {
+  "mv" filepath folderpath;
+}
+
 app (void o) summarize_simulation (file summarize_py, string instance_dir) {
     "python" summarize_py instance_dir;
 }
@@ -111,9 +115,11 @@ app (void o) summarize_simulation (file summarize_py, string instance_dir) {
         python_persist(code, "'ignore'") =>
         (out,err) = run_model(model_sh, executable, xml_out, instance_dir) => {
           distances[replication] = get_result(instance_dir, replication);
-          summarize_simulation (summarize_py, instance_dir); 
-          // =>
-          // rm_dir(instance_dir);
+	  summarize_simulation (summarize_py, instance_dir) => {
+              move_file(instance_dir + "output/metrics.txt", instance_dir);
+// =>
+//              rm_dir(instance_dir + "output/");
+          }
         }
       }
     }

@@ -2,9 +2,11 @@
 # coding: utf-8
 
 import re
+import os
 import sys
 import numpy as np
 import pandas as pd
+import xml.dom.minidom
 import matplotlib.pyplot as plt
 from multicellds import MultiCellDS
 
@@ -66,10 +68,16 @@ def plot_cells(df_time_course, color_dict, ax):
     ax.yaxis.grid(True)
 
 def main():
-
     color_dict = {"alive": "g", "apoptotic": "r", "necrotic":"k"}
 
     instance_folder = sys.argv[1]
+    doc = xml.dom.minidom.parse(os.path.join(instance_folder,"settings.xml"))
+    custom_data = doc.getElementsByTagName("TNFR_binding_rate")
+    k1 = custom_data[0].firstChild.nodeValue
+    custom_data = doc.getElementsByTagName("TNFR_endocytosis_rate")
+    k2 = custom_data[0].firstChild.nodeValue
+    custom_data = doc.getElementsByTagName("TNFR_recycling_rate")
+    k3 = custom_data[0].firstChild.nodeValue
 
     output_data = instance_folder + 'output/'
 
@@ -107,8 +115,21 @@ def main():
     ax2.set_ylim([0, 1000])
     axes[2].legend(loc="upper left")
     ax2.legend(loc="upper right")
+    fig.suptitle('k_1:{}, k_2:{}, k_3:{}'.format(k1,k2,k3))#, fontsize=16)
 
     fig.tight_layout()
     fig.savefig(instance_folder + 'variables_vs_time.png')
+    s = instance_folder.split('/')
+
+    dirname = os.path.dirname(__file__)
+    persistpath =  os.path.join(instance_folder, '..','figures')
+    if not os.path.exists(persistpath):
+        os.makedirs(persistpath)
+    fig.savefig(os.path.join(persistpath, s[-2]+'variables_vs_time.png'))
+    df_time_course.to_csv(os.path.join(persistpath, s[-2]+"time_course.tsv"), sep="\t")
+    df_cell_variables.to_csv(os.path.join(persistpath, s[-2]+"cell_variables.tsv"), sep="\t")
+    df_time_tnf.to_csv(os.path.join(persistpath, s[-2]+"tnf_time.tsv"), sep="\t")
+    k_df = pd.DataFrame([[k1, k2, k3]], columns = ['k1', 'k2', 'k3'])
+    k_df.to_csv(os.path.join(persistpath, s[-2]+"ki_values.tsv"), sep="\t")
 
 main()
