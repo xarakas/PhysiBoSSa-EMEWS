@@ -4,8 +4,8 @@ set -eu
 
 if [ "$#" -lt 3 ]; then
   script_name=$(basename $0)
-  echo "Usage: ${script_name} EXPERIMENT_ID GA_PARAMS_FILE DISTANCE_TYPE CHECKPOINT_FILE (e.g. ${script_name} experiment_1 data/ga_params.json 1 path/to/ga_checkpoint.pkl)"
-  echo "DISTANCE_TYPE is 0 for Euclidean, 1 for DTW, and 2 for l_1"
+  echo "Usage: ${script_name} EXPERIMENT_ID GA_PARAMS_FILE DISTANCE_TYPE CHECKPOINT_FILE (e.g. ${script_name} experiment_1 data/ga_params.json dtw path/to/ga_checkpoint.pkl)"
+  echo "DISTANCE_TYPE is 'euclidean' for Euclidean, 'dtw' for DTW, and 'l1' for l_1"
   exit 1
 fi
 
@@ -76,8 +76,9 @@ SEED=1234
 ITERATIONS=3
 COMPARISONS=2 # Comparisons. Do NOT change this, unless number of files in the location "DEFAULT_XML_OUT/comparison/" changes.
 NUM_POPULATION=2
+NUM_REPETITIONS=2 # take the average of NUM_REPETITIONS similar runs (using the same GA individual)
 
-CMD_LINE_ARGS="$* -seed=$SEED -ni=$ITERATIONS -nv=$COMPARISONS -np=$NUM_POPULATION -exe=$EXECUTABLE_OUT -settings=$CMP_XML_OUT -ga_parameters=$GA_PARAMS_FILE_OUT"
+CMD_LINE_ARGS="$* -seed=$SEED -ni=$ITERATIONS -nv=$COMPARISONS -np=$NUM_POPULATION -nr=$NUM_REPETITIONS -exe=$EXECUTABLE_OUT -settings=$CMP_XML_OUT -ga_parameters=$GA_PARAMS_FILE_OUT"
 
 # Uncomment this for the BG/Q:
 #export MODE=BGQ QUEUE=default

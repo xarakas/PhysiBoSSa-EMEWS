@@ -157,9 +157,9 @@ def get_simulation_dist(instance_dir, replication, emews_root):
                     logging.debug("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}".format(replication, k1, k2, k3, output, eucl_dist(alive, tumor_cells), eucl_dist(apoptotic, death_cells),eucl_dist(necrotic, necrosis_cells), outputDTWa+outputDTWap+outputDTWn,outputDTWa, outputDTWap, outputDTWn, outputl1a+outputl1ap+outputl1n,outputl1a,outputl1ap,outputl1n,(end_eucl-start_eucl).total_seconds()*1000,(end_dtw-start_dtw).total_seconds()*1000,(end_l1-start_l1).total_seconds()*1000 ))
     else:
         logging.error("File output/metrics.txt not found!")
-    if distance_type_id == '1':
+    if distance_type_id == 'dtw':
         return output2
-    elif distance_type_id == '2':
+    elif distance_type_id == 'l1':
         return output3
     else:
         return output

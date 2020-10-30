@@ -217,7 +217,7 @@ def run():
     printf("Parameters: {}".format(parameters))
     logging.info("Parameters: {}".format(parameters))
     distance_type_id = os.getenv('DISTANCE_TYPE_ID')
-    logging.info("Distance type ID (eucl:0, DTW:1, l1:2) - [{}]\tCheckpoint file: {}\n".format(distance_type_id,checkpoint_file_input))
+    logging.info("Distance type - [{}]\tCheckpoint file: {}\n".format(distance_type_id,checkpoint_file_input))
     logging.info("Begin at: {}".format(time.strftime("%H:%M:%S", time.localtime())))
     (num_iterations, num_population, seed, ga_parameters_file) = eval('{}'.format(parameters))
     random.seed(seed)
@@ -251,9 +251,8 @@ def run():
     stats.register("max", np.max)
     stats.register("ts", timestamp)
 
-    # num_iter-1 generations since the initial population is evaluated once first
     start_time = time.time()
-    pop, log = eaSimpleExtended(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=num_iterations - 1, stats=stats, halloffame=hof, verbose=True, checkpoint=checkpoint_file_input)
+    pop, log = eaSimpleExtended(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=num_iterations, stats=stats, halloffame=hof, verbose=True, checkpoint=checkpoint_file_input)
 
     end_time = time.time()
 
