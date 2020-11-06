@@ -27,7 +27,7 @@ def get_tumor_cell_count(instance_dir):
     -1 if run terminated prematurely.
     """
     tumor_cell_count = '-2'
-    fname = '{}/output/metrics.txt'.format(instance_dir)
+    fname = '{}/metrics.txt'.format(instance_dir)
     if os.path.exists(fname):
         file_lines = []
         with open(fname) as f_in:
@@ -46,7 +46,7 @@ def get_custom_cell_count(instance_dir):
     -1 if run terminated prematurely.
     """
     output = '-2'
-    fname = '{}/output/metrics.txt'.format(instance_dir)
+    fname = '{}/metrics.txt'.format(instance_dir)
     if os.path.exists(fname):
         file_lines = []
         with open(fname) as f_in:
@@ -82,7 +82,7 @@ def get_simulation_dist(instance_dir, replication, emews_root):
     output = '-2'
     output2 = '-2'
     output3 = '-3'
-    fname = '{}/output/metrics.txt'.format(instance_dir)
+    fname = '{}/metrics.txt'.format(instance_dir)
     if os.path.exists(fname):
         file_lines = []
         with open(fname) as f_in:
@@ -156,7 +156,7 @@ def get_simulation_dist(instance_dir, replication, emews_root):
                     k3 = custom_data[0].firstChild.nodeValue
                     logging.debug("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}".format(replication, k1, k2, k3, output, eucl_dist(alive, tumor_cells), eucl_dist(apoptotic, death_cells),eucl_dist(necrotic, necrosis_cells), outputDTWa+outputDTWap+outputDTWn,outputDTWa, outputDTWap, outputDTWn, outputl1a+outputl1ap+outputl1n,outputl1a,outputl1ap,outputl1n,(end_eucl-start_eucl).total_seconds()*1000,(end_dtw-start_dtw).total_seconds()*1000,(end_l1-start_l1).total_seconds()*1000 ))
     else:
-        logging.error("File output/metrics.txt not found!")
+        logging.error("File metrics.txt not found!")
     if distance_type_id == 'dtw':
         return output2
     elif distance_type_id == 'l1':
